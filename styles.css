@@ -76,7 +76,6 @@ h1 span { font-size: 32px; font-weight: 400; letter-spacing: 0; color: var(--sub
 .profile-details > div > span { color: var(--subheading); font-size: 15px; }
 .profile-details p { margin-top: 7px; font-size: 16px; }
 .profile-details a { overflow-wrap: anywhere; }
-.birth-date { white-space: nowrap; }
 
 /* 4. 正文平铺：主栏目保留浅底，科研子项目用纯文字、字重和间距分层。 */
 .section { border-top: 1px solid var(--line); padding: 42px 0 46px; }
@@ -86,28 +85,30 @@ h1 span { font-size: 32px; font-weight: 400; letter-spacing: 0; color: var(--sub
 .experience-item:last-child { margin-bottom: 0; }
 .experience-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; }
 .experience-heading strong { font-size: var(--body-size); font-weight: 600; color: #465951; }
-.experience-heading time { flex-shrink: 0; color: var(--muted); font-size: 16px; font-variant-numeric: tabular-nums; }
+/* .meta 用于"在读""课程练习"这类状态说明文字，不是时间，所以不用 <time> */
+.experience-heading .meta { flex-shrink: 0; color: var(--muted); font-size: 16px; font-variant-numeric: tabular-nums; }
 .experience-detail { margin-top: 8px; color: var(--text); font-size: var(--body-size); }
 .research-item { margin-bottom: 28px; }
 .research-item:last-child { margin-bottom: 0; }
 .research-item h3 { font-size: 20px; line-height: 1.9; }
-.research-item time { font-size: 16px; font-weight: 400; color: var(--muted); margin-right: 16px; }
+.research-item .meta { font-size: 16px; font-weight: 400; color: var(--muted); margin-right: 16px; }
 .research-item p { font-size: var(--body-size); margin-top: 8px; line-height: 1.95; }
 .skills-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-.skills-list li { font-size: var(--body-size); }
+.skills-list li { font-size: var(--body-size); padding-top: 15px; border-top: 1px solid #c8baa2; }
 .skills-list strong { display: block; margin-bottom: 8px; font-weight: 600; color: var(--subheading); }
-.skills-list li { padding-top: 15px; border-top: 1px solid #c8baa2; }
 /* 作品图像是实际网站截图。Grid 管布局，CSS 过渡负责轻微悬停效果。 */
 #portfolio { background: #f4f2eb; }
 .portfolio-list { padding: 0; margin: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; }
-.work-card { min-width: 0; }
+.work-card { min-width: 0; position: relative; }
 .work-card > a { display: block; height: 100%; border: 1px solid #ddd8cb; border-radius: 6px; overflow: hidden; background: #fffdf8; transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
 .work-card > a:hover { text-decoration: none; transform: translateY(-4px); border-color: #b7a88d; box-shadow: 0 14px 30px #34433810; }
 .work-card > a:focus-visible { outline-offset: 5px; }
 .work-cover { background: #e5e0d1; padding: 24px; overflow: hidden; }
-.work-community .work-cover { background: #dbe5dc; }
-.work-greeting-card .work-cover { background: #ece0d9; }
-.work-music-station .work-cover { background: #dfe3e7; }
+/* 封面底色按位置循环取四种浅色：卡片顺序变了颜色跟着走，
+   以后在 works-data.js 里加作品也不用回来改 CSS。 */
+.portfolio-list .work-card:nth-child(4n + 2) .work-cover { background: #dbe5dc; }
+.portfolio-list .work-card:nth-child(4n + 3) .work-cover { background: #ece0d9; }
+.portfolio-list .work-card:nth-child(4n + 4) .work-cover { background: #dfe3e7; }
 .work-cover img { display: block; width: 100%; height: auto; aspect-ratio: 1.65; object-fit: cover; object-position: top; border: 1px solid #ffffffb3; border-radius: 3px; box-shadow: 0 8px 20px #2b393614; transition: transform .4s ease; }
 .work-card > a:hover img { transform: scale(1.018); }
 .work-copy { position: relative; padding: 19px 26px 22px; }
@@ -140,7 +141,7 @@ footer { border-top: 1px solid var(--line); padding: 25px 0; }
   nav { gap: 20px; }
   .profile-details { grid-template-columns: repeat(2, 1fr); gap: 16px 30px; }
   .experience-heading { display: block; }
-  .experience-heading time { display: block; margin-top: 4px; }
+  .experience-heading .meta { display: block; margin-top: 4px; }
   .work-cover { padding: 18px; }
   .work-copy { padding: 18px; }
   .work-copy h3 { font-size: 20px; }
@@ -175,7 +176,7 @@ footer { border-top: 1px solid var(--line); padding: 25px 0; }
   .experience-heading strong { font-size: 18px; }
   .experience-detail { font-size: var(--body-size); }
   .research-item h3 { font-size: 18px; }
-  .research-item time { display: block; margin-right: 0; }
+  .research-item .meta { display: block; margin-right: 0; }
   .research-item p { font-size: var(--body-size); }
   .skills-list { grid-template-columns: 1fr; gap: 14px; }
   .skills-list strong { margin-bottom: 2px; }
@@ -257,11 +258,9 @@ footer { border-top: 1px solid var(--line); padding: 25px 0; }
 .to-top.is-visible { opacity: 1; transform: none; pointer-events: auto; }
 .to-top:hover { background: var(--heading-wash); }
 
-/* 让锚点跳转和"返回顶部"都平滑滚动。
-   prefers-reduced-motion 是系统里"减少动态效果"的设置，要尊重它。 */
-@media (prefers-reduced-motion: no-preference) {
-  html { scroll-behavior: smooth; }
-}
+/* 平滑滚动在文件开头的基础 html 规则里已经开启，
+   这里只需要尊重系统的"减少动态效果"设置把它关掉，见上面的 prefers-reduced-motion 块。
+   ——原先这里还有一个 prefers-reduced-motion: no-preference 块重复开启 smooth，已删除。 */
 
 @media (max-width: 640px) {
   .section-indicator { right: 12px; bottom: 74px; font-size: 12px; }
@@ -333,8 +332,7 @@ footer { border-top: 1px solid var(--line); padding: 25px 0; }
 }
 .works-sort { margin-left: auto; }
 
-/* 年份徽标：贴在封面右上角 */
-.work-card { position: relative; }
+/* 年份徽标：贴在封面右上角（.work-card 的 position:relative 在上面的作品卡片一节里） */
 .work-year {
   position: absolute;
   top: 12px;
